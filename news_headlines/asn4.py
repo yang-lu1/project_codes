@@ -1,34 +1,58 @@
-from scipy.sparse import lil_matrix # Needed for building the matrix of user ratings
+
 import scipy.spatial.distance
-from sklearn import cluster # Needed for calculating pairwise distances
+
 from sklearn.decomposition import TruncatedSVD
 from sklearn.cluster import AgglomerativeClustering, KMeans, k_means
-import json
-import random
 import pandas as pd
 import numpy as np
 
 import matplotlib.pyplot as plt
 
-from scipy.sparse import lil_matrix
 
-from sklearn.neighbors import DistanceMetric
-
-from sklearn.metrics import jaccard_score
-from sklearn.metrics import pairwise_distances
 
 df=pd.read_csv("2021.csv")
-
-from sklearn.metrics import silhouette_score
-# model = KMeans(n_clusters=20)
-num_clusters=20
-model = AgglomerativeClustering(n_clusters=num_clusters)
 matrix=df[["Healthy life expectancy","Ladder score"]]
+
+#Inertia scores to choose a good cluster number
+
+inertia_scores = []
+svd = TruncatedSVD(n_components=1)
+svd.fit(matrix)
+
+matrix_reduced_pt2 = svd.transform(matrix)
+## redo clustering with random k values
+
+# Let us test different values of k
+inertia_scores = []
+for test_k in set(np.random.randint(2,120,30)):
+    print(test_k)
+    
+    tmp_model = KMeans(n_clusters=test_k)
+    tmp_model.fit(matrix_reduced_pt2)
+    
+    score = tmp_model.inertia_
+    inertia_scores.append((test_k, score))
+intertia_df = pd.DataFrame(inertia_scores, columns=["k", "score"])
+fig = plt.figure(figsize=(16,9))
+ax = fig.add_subplot(1,1,1)
+
+intertia_df.sort_values(by="k").plot("k", "score", ax=ax)
+print(intertia_df)
+ax.set_ylabel("Intertia")
+plt.show() #"Elbow" graph
+
+
+#uncomment KMeans(..) and comment AgglomerativeClustering(...) to choose between the two models
+# model = KMeans(n_clusters=20)
+num_clusters=20 #20 is from inertia score
+model = AgglomerativeClustering(n_clusters=num_clusters)
 model.fit(matrix)
 df["cluster"] = model.labels_
 
 plt.scatter(matrix["Ladder score"], matrix["Healthy life expectancy"], c=df["cluster"])
-plt.show()
+plt.show() #scatterplot
+
+
 counter=0
 while counter<num_clusters:
     df2 = df.loc[df["cluster"] == counter]
@@ -41,8 +65,8 @@ newdf=df.loc[df["cluster"] == 19]
 newdf=newdf[["Healthy life expectancy","Ladder score"]]
 
 newdf["points"]=list(zip(newdf["Healthy life expectancy"], newdf["Ladder score"]))
-
 points = newdf["points"].values.tolist()
+
 sim=scipy.spatial.distance.cdist(points, points, 'euclidean')
 cluster_list=['United States', 'Lithuania',"Colombia","Hungary","Nicaragua","Peru","Bosnia and Herzegovina","Vietnam"]
 simdf = pd.DataFrame(sim, columns = cluster_list)
@@ -51,6 +75,7 @@ simdf=simdf.set_index("Country Name")
 print(simdf)
 
 
+#Dendrogram to show hierarchy of AgglomerativeClustering
 
 from scipy.cluster.hierarchy import dendrogram
 
@@ -87,30 +112,3 @@ plot_dendrogram(model, truncate_mode="level", p=3)
 plt.ylabel("Distance")
 plt.xlabel("Number of points in node (or index of point if no parenthesis).")
 plt.show()
-
-
-# interia_scores = []
-# svd = TruncatedSVD(n_components=1)
-# svd.fit(matrix_dense)
-
-# matrix_reduced_pt2 = svd.transform(matrix_dense)
-# ## redo clustering with random k values
-
-# # Let us test different values of k
-# interia_scores = []
-# for test_k in set(np.random.randint(2,120,30)):
-#     print(test_k)
-    
-#     tmp_model = KMeans(n_clusters=test_k)
-#     tmp_model.fit(matrix_reduced_pt2)
-    
-#     score = tmp_model.inertia_
-#     interia_scores.append((test_k, score))
-# intertia_df = pd.DataFrame(interia_scores, columns=["k", "score"])
-# fig = plt.figure(figsize=(16,9))
-# ax = fig.add_subplot(1,1,1)
-
-# intertia_df.sort_values(by="k").plot("k", "score", ax=ax)
-# print(intertia_df)
-# ax.set_ylabel("Intertia")
-# plt.show()
