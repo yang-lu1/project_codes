@@ -2,6 +2,6 @@
 repository of my project codes, both academic and personal
 
 ## Works on other websites/Platforms
-Medium : https://medium.com/@ylk01413
+Medium (Data analyzation projects) : https://medium.com/@ylk01413
 <br />
-Heroku : https://boiling-hamlet-23668.herokuapp.com/ 
+Heroku (learning HTML, CSS, JS) : https://boiling-hamlet-23668.herokuapp.com/ 
