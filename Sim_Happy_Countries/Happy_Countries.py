@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-df = pd.read_csv("2021.csv")
+df = pd.read_csv("Sim_Happy_Countries/2021.csv")
 matrix = df[["Healthy life expectancy", "Ladder score"]]
 
 # Inertia scores to choose a good cluster number
@@ -25,7 +25,6 @@ matrix_reduced_pt2 = svd.transform(matrix)
 # Let us test different values of k
 inertia_scores = []
 for test_k in set(np.random.randint(2, 120, 30)):
-    print(test_k)
 
     tmp_model = KMeans(n_clusters=test_k)
     tmp_model.fit(matrix_reduced_pt2)
