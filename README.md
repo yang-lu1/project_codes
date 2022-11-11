@@ -7,5 +7,4 @@ Medium (Data analyzation projects) : https://medium.com/@ylk01413
 Heroku (learning HTML, CSS, JS) : https://boiling-hamlet-23668.herokuapp.com/
 In case Heroku no worky https://yang-lu1.github.io
 <br />
-<br />
 Tableau: https://public.tableau.com/app/profile/yang.lu2172
