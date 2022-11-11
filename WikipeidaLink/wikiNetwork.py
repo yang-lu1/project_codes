@@ -1,7 +1,9 @@
 from operator import itemgetter
 import networkx as nx
-import wikipedia 
+from mediawiki import MediaWiki
 import matplotlib.pyplot as plt
+wikipedia = MediaWiki()
+
 
 Topic = "Bubble Tea".title()
 degree=2
